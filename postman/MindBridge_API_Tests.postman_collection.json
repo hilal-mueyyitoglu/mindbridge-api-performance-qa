@@ -1,0 +1,112 @@
+{
+  "info": {
+    "name": "MindBridge API Tests | QA Portfolio",
+    "description": "Reconstructed test design from simulated learning labs; runs only against the local MindBridge app.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "GET Courses - Happy Path",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/courses",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "courses"
+          ]
+        },
+        "description": "Expected 200 and JSON courses array."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.expect(pm.response.code).to.eql(200);",
+              "});",
+              "pm.test('Response contains a courses array', function () {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body).to.have.property('courses');",
+              "    pm.expect(body.courses).to.be.an('array');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "POST Register - Invalid Body",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/register",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "register"
+          ]
+        },
+        "description": "Expected 400 validation_error; empty payload must not create an account."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 400', function () {",
+              "    pm.expect(pm.response.code).to.eql(400);",
+              "});",
+              "pm.test('Validation error is returned', function () {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body).to.have.property('error');",
+              "    pm.expect(body.error.code).to.eql('validation_error');",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
